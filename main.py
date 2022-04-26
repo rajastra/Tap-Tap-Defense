@@ -1,99 +1,169 @@
-#abstract class
-from abc import ABC, abstractmethod
+import pygame
+from pygame import mixer
+import time
+import os
+import random
+import math
 
-#class abstract BomboSapiens,hp,spd,jarak maju(),meledak(),berhenti()
-class BomboSapiens(ABC):
-      def __init__(self,hp,spd,jarak):
-         self.hp = hp
-         self.spd = spd
-         self.jarak = jarak
-      @abstractmethod
-      def maju(self):
-         pass
-      @abstractmethod
-      def meledak(self):
-         pass
-      @abstractmethod
-      def berhenti(self):
-         pass
+#initialize the pygame
+pygame.init()
 
-#class abstract Senjata ammo,dmg,reload tembak(),reload()
-class Senjata(ABC):
-      def __init__(self,ammo,dmg,reload):
-         self.ammo = ammo
-         self.dmg = dmg
-         self.reload = reload
-      @abstractmethod
-      def tembak(self):
-         pass
-      @abstractmethod
-      def reloadf(self):
-         pass
+#create screen
+width = 700
+height = 300
+screen = pygame.display.set_mode((width, height))
+bgImage = pygame.image.load(os.path.join("game_assets", "background.jpg"))
+rescaledBackground = pygame.transform.scale(bgImage, (width, height))
 
-#class normalBombo inherit from BomboSapiens
-class NormalBombo(BomboSapiens):
-      def __init__(self,hp,spd,jarak):
-         super().__init__(hp,spd,jarak)
-      def maju(self):
-         pass
-      def meledak(self):
-         pass
-      def berhenti(self):
-         pass
+#cursor edit
+crosshair = pygame.image.load(os.path.join("game_assets", "crosshair.png")).convert_alpha()
+pygame.mouse.set_visible(False)
 
-#class GiantBombo inherit from BomboSapiens
-class GiantBombo(BomboSapiens):
-      def __init__(self,hp,spd,jarak):
-         super().__init__(hp,spd,jarak)   
-      def maju(self):
-         pass
-      def meledak(self):
-         pass
-      def berhenti(self):
-         pass
+#bg music
+mixer.music.load(os.path.join("game_assets", "grasswalk.mp3"))
+mixer.music.play(-1)
 
-#class Glock inherit from Senjata tembak(),tembak2(),reload()
-class Glock(Senjata):
-      def __init__(self,ammo,dmg,reload):
-         super().__init__(ammo,dmg,reload)   
-      def tembak(self):
-         pass
-      def reload(self):
-         pass
+#glock music
+start = mixer.Sound(os.path.join("game_assets", "glock_start.mp3"))
+reload = mixer.Sound(os.path.join("game_assets", "glock_reload.mp3"))
+shoot = mixer.Sound(os.path.join("game_assets", "glock_shoot.mp3"))
 
-#class revolver inherit from Senjata boost(),mantul()
-class Revolver(Senjata):
-      def __init__(self,ammo,dmg,reload):
-         super().__init__(ammo,dmg,reload)   
-      def boost(self):
-         pass
-      def mantul(self):
-         pass
-      def tembak(self):
-         pass
-      def reload(self):
-         pass
+#our data
+damage = 0
+score_value = 0
 
-#class skill1 cost active()
-class Skill1:
-      def __init__(self,cost):
-         self.cost = cost
-      def active(self):
-         pass
+font = pygame.font.Font("freesansbold.ttf", 32)
+textx = 10
+texty = 10
 
-#class skill2 cost,charge,dmg active()
-class Skill2:
-      def __init__(self,cost,charge,dmg):
-         self.cost = cost
-         self.charge = charge
-         self.dmg = dmg
-      def active(self):
-         pass
-#class skill3 cost,area,dmg active()
-class Skill3:
-      def __init__(self,cost,area,dmg):
-         self.cost = cost
-         self.area = area
-         self.dmg = dmg
-      def active(self):
-         pass
+#normal bombo
+nbomboImage = pygame.image.load(os.path.join("game_assets", "Normal Bombo.png"))
+nbomboSpd = 0.03
+
+#giant bombo
+gbomboImage = pygame.image.load(os.path.join("game_assets", "Giant Bombo.png"))
+gbomboSpd = 0.015
+
+#explode
+explodeImage = pygame.image.load(os.path.join("game_assets", "explosion.png"))
+explodeImage = pygame.transform.scale(explodeImage, (80, 80))
+explodeSound = mixer.Sound(os.path.join("game_assets", "explosion.mp3"))
+
+#enemy data
+spawn_rate = 1000
+add_mob = 0
+mob_pos = [15, 75, 135, 195, 255]
+
+mob_counter = 0
+mob = []
+mobImg = [nbomboImage, gbomboImage, explodeImage]
+mobSpd = [nbomboSpd, gbomboSpd, 0]
+
+#skill1
+s1Sound = mixer.Sound(os.path.join("game_assets", "skill1.mp3"))
+
+#game over
+gvSound = mixer.Sound(os.path.join("game_assets", "gameover.mp3"))
+
+def show_score(x, y):
+    score = font.render("Score : " + str(score_value), True, (255, 255, 255))
+    screen.blit(score, (x, y))
+
+def show_defense(x, y):
+    lives = font.render("Lives : " + str(10 - damage), True, (255, 255, 255))
+    screen.blit(lives, (x, y + 32))
+
+def nbombo(x, y, i):
+    screen.blit(i, (x, y))
+
+def isCollision(mobx, moby, curx, cury):
+    distance = math.sqrt((math.pow(mobx - curx, 2)) + (math.pow(moby - cury, 2)))
+    if distance < 15:
+        return True
+    else:
+        return False
+
+def generate():
+    x = random.randint(0, 1)
+    temp_mob = [mobImg[x], mobSpd[x], 700, random.choice(mob_pos), False, 0]
+    return temp_mob
+
+def remove(list, i):
+    list.remove(i)
+    return list
+
+#title and icon
+pygame.display.set_caption("Tap Tap Defense | MC-KRIW")
+icon = pygame.image.load(os.path.join("game_assets", "icon.png"))
+pygame.display.set_icon(icon)
+
+#game loop
+run = True
+start.play()
+while run:
+    screen.blit(rescaledBackground, (0, 0))  # draw bg
+    curx, cury = pygame.mouse.get_pos()
+    screen.blit(crosshair, (curx, cury))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        #controls
+        if event.type == pygame.KEYDOWN:
+            if pygame.key.get_pressed()[pygame.K_r]:
+                reload.play()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            key = pygame.mouse.get_pressed()
+            if key[0]:
+                if start.play():
+                    start.stop()
+                if reload.play():
+                    reload.stop()
+                shoot.play()
+                #collision
+                for i in mob:
+                    collision = isCollision(i[2], i[3], curx, cury)
+                    if collision:
+                        explodeSound.play()
+                        score_value += 1
+                        i[0] = mobImg[2]
+                        i[1] = mobSpd[2]
+                        i[4] = True
+            if key[2]:
+                s1Sound.play()
+                for i in mob:
+                    if i[0] == mobImg[0]:
+                        i[2] += 100
+                    elif i[0] == mobImg[1]:
+                        i[2] += i[1] + 2
+
+    mob_counter += 1
+    if mob_counter == spawn_rate:
+        mob_counter = 0
+        temp_mob = generate()
+        mob.append(temp_mob)
+
+    for j in mob:
+        if j[4]:
+            j[5] += 1
+        if j[5] == 500:
+            mob = remove(mob, j)
+        if j[2] <= 280 and j[4] == False:
+            explodeSound.play()
+            damage += 1
+            j[0] = mobImg[2]
+            j[1] = 0
+            j[4] = True
+        j[2] -= j[1]
+        nbombo(j[2], j[3], j[0])
+
+    if damage == 10:
+        mixer.music.stop()
+        explodeSound.stop()
+        gvSound.play()
+        time.sleep(3)
+        break
+
+    show_score(textx, texty)
+    show_defense(textx, texty)
+    pygame.display.update()
