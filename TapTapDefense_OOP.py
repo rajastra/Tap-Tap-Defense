@@ -51,6 +51,9 @@ class Player():
         self.play = False
         time.sleep(3)
 
+    def use_skill(self, cost):
+        self.mana -= cost
+
     def update(self):
         self.x, self.y = pygame.mouse.get_pos()
         crosshair = pygame.image.load(os.path.join("game_assets", "crosshair.png")).convert_alpha()
@@ -97,6 +100,7 @@ class BomboSapiens(ABC):
         self.hp -= dmg
         if self.hp <= 0:
             self.explode()
+            Player.get_kill(player)
 
     @abstractmethod
     def explode(self):
@@ -214,7 +218,6 @@ class Senjata(ABC):
             self.reload()
         if self.ISreload:
             self.time += 1
-            print(self.time)
         if self.time == self.reload_time:
             self.ammo = self.mag
             self.ISshoot = True
@@ -268,13 +271,15 @@ class Skill1:
         self.knockback = 100
         self.sound = mixer.Sound(os.path.join("game_assets", "skill1.mp3"))
 
-    def active(self, list):
-        self.sound.play()
-        for i in list:
-            if i.name == "NB":
-                i.x += self.knockback
-            elif i.name == 'GB':
-                i.stun(15)
+    def active(self, list, mana):
+        if mana >= self.cost:
+            Player.use_skill(player, self.cost)
+            self.sound.play()
+            for i in list:
+                if i.name == "NB":
+                    i.x += self.knockback
+                elif i.name == 'GB':
+                    i.stun(15)
 
 class Skill2:
     def __init__(self,cost,charge,dmg):
@@ -344,9 +349,8 @@ while player.play:
                 for i in mob:
                     if IScollision(i.x, i.y, player.x, player.y, weapon.ammo):
                         i.take_damage(weapon.dmg)
-                        player.get_kill()
             if key[2]:
-                skill.active(mob)
+                skill.active(mob, player.mana)
 
     BomboSapiens.add_mob += 1
     if BomboSapiens.add_mob == BomboSapiens.spawn_rate:
