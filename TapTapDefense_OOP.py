@@ -66,18 +66,22 @@ class Player():
 
 class BomboSapiens(ABC):
     spawn_rate = 60
-    stun_duration = 30
     add_mob = 0
     mob_pos = [15, 75, 135, 195, 255]
-    explodeImage = pygame.image.load(os.path.join("game_assets", "explosion.png"))
-    explodeImage = pygame.transform.scale(explodeImage, (80, 80))
+    explodeImage = []
+    for i in range(9):
+        tempImage = pygame.image.load(os.path.join("game_assets", "explosion0" + str(i) + ".png"))
+        tempImage = pygame.transform.scale(tempImage, (80, 80))
+        explodeImage.append(tempImage)
     explodeSound = mixer.Sound(os.path.join("game_assets", "explosion.mp3"))
-    explodeDuration = 15
+    explodeDuration = 8
 
-    def __init__(self, hp, spd, image):
+    def __init__(self, name, hp, spd, image):
+        self.name = name
         self.image = image
         self.hp = hp
-        self.spd = spd
+        self.__spd = spd
+        self.move = self.__spd
         self.ISexplode = False
         self.ISstun = False
         self.time = 0
@@ -86,7 +90,7 @@ class BomboSapiens(ABC):
 
     @abstractmethod
     def maju(self):
-        self.x -= self.spd
+        self.x -= self.move
 
     @abstractmethod
     def take_damage(self, dmg):
@@ -96,14 +100,15 @@ class BomboSapiens(ABC):
 
     @abstractmethod
     def explode(self):
-        self.spd = 0
-        self.image = BomboSapiens.explodeImage
+        self.move = 0
+        self.image = BomboSapiens.explodeImage[self.time]
         BomboSapiens.explodeSound.play()
         self.ISexplode = True
 
     @abstractmethod
-    def stun(self):
-        self.spd = 0
+    def stun(self, time):
+        self.move = 0
+        self.stun_duration = time
         self.ISstun = True
 
     @abstractmethod
@@ -115,19 +120,24 @@ class BomboSapiens(ABC):
             Player.take_damage(player)
         if self.ISexplode:
             self.time += 1
+            self.image = BomboSapiens.explodeImage[self.time]
             if self.time == BomboSapiens.explodeDuration:
                 remove(mob, i)
+                self.time = 0
         if self.ISstun:
             self.time += 1
-            if self.time == BomboSapiens.stun_duration:
+            if self.time == self.stun_duration:
                 self.ISstun = False
+                self.move = self.__spd
+                self.time = 0
 
 class NormalBombo(BomboSapiens):
     def __init__(self):
+        name = "NB"
         image = pygame.image.load(os.path.join("game_assets", "Normal Bombo.png"))
         hp = 10
         spd = 1
-        super().__init__(hp, spd, image)
+        super().__init__(name, hp, spd, image)
 
     def maju(self):
         super().maju()
@@ -138,18 +148,19 @@ class NormalBombo(BomboSapiens):
     def explode(self):
         super().explode()
 
-    def stun(self):
-        super().stun()
+    def stun(self, time):
+        super().stun(time)
 
     def update(self):
         super().update()
 
 class GiantBombo(BomboSapiens):
     def __init__(self):
+        name = "GB"
         image = pygame.image.load(os.path.join("game_assets", "Giant Bombo.png"))
         hp = 30
         spd = 0.5
-        super().__init__(hp, spd, image)
+        super().__init__(name, hp, spd, image)
 
     def maju(self):
         super().maju()
@@ -160,8 +171,8 @@ class GiantBombo(BomboSapiens):
     def explode(self):
         super().explode()
 
-    def stun(self):
-        super().stun()
+    def stun(self, time):
+        super().stun(time)
 
     def update(self):
         super().update()
@@ -254,9 +265,16 @@ class Revolver(Senjata):
 class Skill1:
     def __init__(self):
         self.cost = 100
+        self.knockback = 100
+        self.sound = mixer.Sound(os.path.join("game_assets", "skill1.mp3"))
 
-    def active(self):
-        pass
+    def active(self, list):
+        self.sound.play()
+        for i in list:
+            if i.name == "NB":
+                i.x += self.knockback
+            elif i.name == 'GB':
+                i.stun(15)
 
 class Skill2:
     def __init__(self,cost,charge,dmg):
@@ -276,9 +294,9 @@ class Skill3:
     def active(self):
         pass
 
-def IScollision(mobx, moby, curx, cury):
+def IScollision(mobx, moby, curx, cury, ammo):
     distance = math.sqrt((math.pow(mobx - curx, 2)) + (math.pow(moby - cury, 2)))
-    if distance < 15:
+    if distance < 15 and ammo != 0:
         return True
     else:
         return False
@@ -305,7 +323,7 @@ while player.play:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            run = False
+            player.play = False
         if event.type == pygame.KEYDOWN:
             if pygame.key.get_pressed()[pygame.K_r]:
                 weapon.reload()
@@ -324,9 +342,11 @@ while player.play:
             if key[0]:
                 weapon.shoot()
                 for i in mob:
-                    if IScollision(i.x, i.y, player.x, player.y):
+                    if IScollision(i.x, i.y, player.x, player.y, weapon.ammo):
                         i.take_damage(weapon.dmg)
                         player.get_kill()
+            if key[2]:
+                skill.active(mob)
 
     BomboSapiens.add_mob += 1
     if BomboSapiens.add_mob == BomboSapiens.spawn_rate:
