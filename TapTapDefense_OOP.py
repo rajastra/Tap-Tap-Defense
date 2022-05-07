@@ -17,8 +17,8 @@ bgImage = pygame.image.load(os.path.join("game_assets", "background.jpg"))
 rescaledBackground = pygame.transform.scale(bgImage, (width, height))
 
 mixer.music.load(os.path.join("game_assets", "grasswalk.mp3"))
-mixer.music.play(-1)
 gvSound = mixer.Sound(os.path.join("game_assets", "gameover.mp3"))
+mixer.music.play(-1)
 
 pygame.mouse.set_visible(False)
 
@@ -105,12 +105,13 @@ class BomboSapiens(ABC):
     @abstractmethod
     def explode(self):
         self.move = 0
-        self.image = BomboSapiens.explodeImage[self.time]
+        self.time = 0
         BomboSapiens.explodeSound.play()
         self.ISexplode = True
 
     @abstractmethod
     def stun(self, time):
+        self.time = 0
         self.move = 0
         self.stun_duration = time
         self.ISstun = True
@@ -128,7 +129,7 @@ class BomboSapiens(ABC):
             if self.time == BomboSapiens.explodeDuration:
                 remove(mob, i)
                 self.time = 0
-        if self.ISstun:
+        if self.ISstun and not self.ISexplode:
             self.time += 1
             if self.time == self.stun_duration:
                 self.ISstun = False
@@ -162,6 +163,7 @@ class GiantBombo(BomboSapiens):
     def __init__(self):
         name = "GB"
         image = pygame.image.load(os.path.join("game_assets", "Giant Bombo.png"))
+        self.angry_sound = mixer.Sound(os.path.join("game_assets", "Giant Bombo Angry.mp3"))
         hp = 30
         spd = 0.5
         super().__init__(name, hp, spd, image)
@@ -170,9 +172,12 @@ class GiantBombo(BomboSapiens):
         super().maju()
 
     def take_damage(self, dmg):
+        self.angry_sound.play()
+        self.move += 0.5
         super().take_damage(dmg)
 
     def explode(self):
+        self.angry_sound.stop()
         super().explode()
 
     def stun(self, time):
@@ -182,7 +187,8 @@ class GiantBombo(BomboSapiens):
         super().update()
 
 class Senjata(ABC):
-    def __init__(self, mag, dmg, time, start, reload, shoot):
+    def __init__(self, name, mag, dmg, time, start, reload, shoot):
+        self.name = name
         self.mag = mag
         self.ammo = self.mag
         self.dmg = dmg
@@ -226,13 +232,14 @@ class Senjata(ABC):
 
 class Glock(Senjata):
     def __init__(self):
+        name = 'G'
         mag = 15
         dmg = 10
         time = 90
         start = mixer.Sound(os.path.join("game_assets", "glock_start.mp3"))
         reload = mixer.Sound(os.path.join("game_assets", "glock_reload.mp3"))
         shoot = mixer.Sound(os.path.join("game_assets", "glock_shoot.mp3"))
-        super().__init__(mag, dmg, time, start, reload, shoot)
+        super().__init__(name, mag, dmg, time, start, reload, shoot)
 
     def start(self):
         super().start()
@@ -247,28 +254,41 @@ class Glock(Senjata):
         super().update()
 
 class Revolver(Senjata):
-    def __init__(self,ammo,dmg,reload):
-        super().__init__(ammo,dmg,reload)
-
-    def boost(self):
-        pass
-
-    def mantul(self):
-        pass
+    def __init__(self):
+        name = 'R'
+        mag = 6
+        dmg = 20
+        time = 300
+        start = mixer.Sound(os.path.join("game_assets", "revolver_start.mp3"))
+        reload = []
+        for i in range(7):
+            temp = mixer.Sound(os.path.join("game_assets", "revolver_reload" + str(i) + ".mp3"))
+            reload.append(temp)
+        shoot = mixer.Sound(os.path.join("game_assets", "revolver_shoot.mp3"))
+        super().__init__(name, mag, dmg, time, start, reload, shoot)
+        self.boost = 0
 
     def start(self):
         super().start()
 
     def shoot(self):
-        pass
+        super().shoot()
 
     def reload(self):
-        pass
+        self.time += (30 * self.boost)
+        self.Sreload[self.boost].play()
+        self.boost = 0
+        self.ISreload = True
+        self.ISshoot = False
+
+    def update(self):
+        super().update()
 
 class Skill1:
     def __init__(self):
         self.cost = 100
         self.knockback = 100
+        self.effect = 15
         self.sound = mixer.Sound(os.path.join("game_assets", "skill1.mp3"))
 
     def active(self, list, mana):
@@ -279,29 +299,39 @@ class Skill1:
                 if i.name == "NB":
                     i.x += self.knockback
                 elif i.name == 'GB':
-                    i.stun(15)
+                    i.stun(self.effect)
 
 class Skill2:
-    def __init__(self,cost,charge,dmg):
-        self.cost = cost
-        self.charge = charge
-        self.dmg = dmg
+    def __init__(self):
+        self.cost = 150
+        self.dmg = 5
+        self.effect = 30
+        self.sound = mixer.Sound(os.path.join("game_assets", "skill1.mp3"))
 
-    def active(self):
-         pass
+    def active(self, list, mana):
+        if mana >= self.cost:
+            player.use_skill(self.cost)
+            self.sound.play()
+            for i in list:
+                i.take_damage(self.dmg)
+                i.stun(self.effect)
 
 class Skill3:
-    def __init__(self,cost,area,dmg):
-        self.cost = cost
-        self.area = area
-        self.dmg = dmg
+    def __init__(self):
+        self.cost = 300
+        self.dmg = 999
+        self.sound = mixer.Sound(os.path.join("game_assets", "skill1.mp3"))
 
-    def active(self):
-        pass
+    def active(self, list, mana):
+        if mana >= self.cost:
+            player.use_skill(self.cost)
+            self.sound.play()
+            for i in list:
+                i.take_damage(self.dmg)
 
 def IScollision(mobx, moby, curx, cury, ammo):
     distance = math.sqrt((math.pow(mobx - curx, 2)) + (math.pow(moby - cury, 2)))
-    if distance < 15 and ammo != 0:
+    if distance < 15 and ammo >= 0:
         return True
     else:
         return False
@@ -313,9 +343,9 @@ def remove(list, i):
 #initiation
 fast = False
 player = Player()
-weapon = Glock()
+weapon = Revolver()
 weapon.start()
-skill = Skill1()
+skill = Skill3()
 mob = []
 
 #game loop
@@ -339,6 +369,8 @@ while player.play:
                 elif fast:
                     fast = False
                     FPS = 60
+            if pygame.key.get_pressed()[pygame.K_o]:
+                player.mana += 300
         if event.type == pygame.KEYUP:
             if pygame.key.get_pressed()[pygame.K_p]:
                 FPS = 60
@@ -349,6 +381,8 @@ while player.play:
                 for i in mob:
                     if IScollision(i.x, i.y, player.x, player.y, weapon.ammo):
                         i.take_damage(weapon.dmg)
+                        if weapon.name == 'R':
+                            weapon.boost += 1
             if key[2]:
                 skill.active(mob, player.mana)
 
