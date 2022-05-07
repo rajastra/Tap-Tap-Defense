@@ -283,6 +283,7 @@ class Revolver(Senjata):
 
     def update(self):
         super().update()
+        print(self.boost)
 
 class Skill1:
     def __init__(self):
@@ -331,7 +332,7 @@ class Skill3:
 
 def IScollision(mobx, moby, curx, cury, ammo):
     distance = math.sqrt((math.pow(mobx - curx, 2)) + (math.pow(moby - cury, 2)))
-    if distance < 15 and ammo >= 0:
+    if distance < 15 and ammo > 0:
         return True
     else:
         return False
