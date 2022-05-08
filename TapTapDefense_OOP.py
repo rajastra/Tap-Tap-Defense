@@ -16,7 +16,7 @@ screen = pygame.display.set_mode((width, height))
 bgImage = pygame.image.load(os.path.join("game_assets", "background.jpg"))
 rescaledBackground = pygame.transform.scale(bgImage, (width, height))
 
-mixer.music.load(os.path.join("game_assets", "grasswalk.mp3"))
+mixer.music.load(os.path.join("game_assets", "music.mp3"))
 gvSound = mixer.Sound(os.path.join("game_assets", "gameover.mp3"))
 mixer.music.play(-1)
 
