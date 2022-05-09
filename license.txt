@@ -18,3 +18,25 @@
           Music from https://www.zapsplat.com
 
 ###############################################################################
+
+###########################################################################################################################################
+
+Seluruh image yang digunakan untuk design background game adalah dari situs Freepik.com
+
+License summary
+
+Our License allows you to use the content :
+
+For commercial and personal projects
+On digital or printed media
+For an unlimited number of times and without any time limits
+From anywhere in the world
+To make modifications and create derivative works
+*This text is a summary for information purposes only. It does not constitute any contractual obligations. 
+For more information, please read our Terms of Use before using the content.
+ 
+rumput : image from <a href='https://www.freepik.com/vectors/grass'>Grass vector created by freepik - www.freepik.com</a>
+batu : image from <a href='https://www.freepik.com/vectors/kraken'>Kraken vector created by macrovector - www.freepik.com</a>
+pohon : image from <a href='https://www.freepik.com/vectors/tree-clipart'>Tree clipart vector created by brgfx - www.freepik.com</a>
+
+###########################################################################################################################################
