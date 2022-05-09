@@ -59,7 +59,7 @@ class Player():
         crosshair = pygame.image.load(os.path.join("game_assets", "crosshair.png")).convert_alpha()
         score = font.render("Score : " + str(self.score), True, font_color)
         lives = font.render("Lives : " + str(5 - self.damage), True, font_color)
-        mana = font.render(str(self.mana) + "/300", True, font_color)
+        mana = font.render("Mana : " + str(self.mana) + "/300", True, font_color)
         screen.blit(crosshair, (self.x, self.y))
         screen.blit(score, (Player.textX, Player.textY))
         screen.blit(lives, (Player.textX, Player.textY + 35))
@@ -68,7 +68,7 @@ class Player():
             self.game_over()
 
 class BomboSapiens(ABC):
-    spawn_rate = 60
+    spawn_rate = 90
     add_mob = 0
     mob_pos = [15, 75, 135, 195, 255]
     explodeImage = []
@@ -212,13 +212,14 @@ class Senjata(ABC):
 
     @abstractmethod
     def reload(self):
-        self.Sreload.play()
-        self.ISreload = True
-        self.ISshoot = False
+        if not self.ISreload:
+            self.Sreload.play()
+            self.ISreload = True
+            self.ISshoot = False
 
     @abstractmethod
     def update(self):
-        ammo = font.render(str(self.ammo) + "/" + str(self.mag), True, font_color)
+        ammo = font.render("Ammo : " + str(self.ammo) + "/" + str(self.mag), True, font_color)
         screen.blit(ammo, (Player.textX, Player.textY + 225))
         if self.ammo == 0 and not self.ISreload:
             self.reload()
@@ -257,7 +258,7 @@ class Revolver(Senjata):
     def __init__(self):
         name = 'R'
         mag = 6
-        dmg = 20
+        dmg = 30
         time = 300
         start = mixer.Sound(os.path.join("game_assets", "revolver_start.mp3"))
         reload = []
@@ -275,15 +276,15 @@ class Revolver(Senjata):
         super().shoot()
 
     def reload(self):
-        self.time += (30 * self.boost)
-        self.Sreload[self.boost].play()
-        self.boost = 0
-        self.ISreload = True
-        self.ISshoot = False
+        if not self.ISreload:
+            self.time += (30 * self.boost)
+            self.Sreload[self.boost].play()
+            self.boost = 0
+            self.ISreload = True
+            self.ISshoot = False
 
     def update(self):
         super().update()
-        print(self.boost)
 
 class Skill1:
     def __init__(self):
@@ -330,9 +331,9 @@ class Skill3:
             for i in list:
                 i.take_damage(self.dmg)
 
-def IScollision(mobx, moby, curx, cury, ammo):
+def IScollision(mobx, moby, curx, cury, shoot):
     distance = math.sqrt((math.pow(mobx - curx, 2)) + (math.pow(moby - cury, 2)))
-    if distance < 15 and ammo > 0:
+    if distance < 15 and shoot:
         return True
     else:
         return False
@@ -348,7 +349,7 @@ weapon = Revolver()
 weapon.start()
 skill = Skill3()
 mob = []
-
+mixer.music.set_volume(0.2)
 #game loop
 while player.play:
     screen.blit(rescaledBackground, (0, 0))
@@ -371,7 +372,7 @@ while player.play:
                     fast = False
                     FPS = 60
             if pygame.key.get_pressed()[pygame.K_o]:
-                player.mana += 300
+                player.mana += (300 - player.mana)
         if event.type == pygame.KEYUP:
             if pygame.key.get_pressed()[pygame.K_p]:
                 FPS = 60
@@ -380,9 +381,9 @@ while player.play:
             if key[0]:
                 weapon.shoot()
                 for i in mob:
-                    if IScollision(i.x, i.y, player.x, player.y, weapon.ammo):
+                    if IScollision(i.x, i.y, player.x, player.y, weapon.ISshoot):
                         i.take_damage(weapon.dmg)
-                        if weapon.name == 'R':
+                        if weapon.name == 'R' and weapon.boost <= 5:
                             weapon.boost += 1
             if key[2]:
                 skill.active(mob, player.mana)
