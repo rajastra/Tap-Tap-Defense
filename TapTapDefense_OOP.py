@@ -330,7 +330,7 @@ class Skill3:
             self.sound.play()
             for i in list:
                 i.take_damage(self.dmg)
-class menu:
+class StartMenu:
     def __init__(self):
         self.__game_active = False
         self.img = pygame.image.load(os.path.join("game_assets", "Giant Bombo.png"))
@@ -350,7 +350,25 @@ class menu:
     def get_game_active(self):
         return self.__game_active
 
+class EndMenu:
+    def __init__(self):
+        self.__game_active = False
+        self.img = pygame.image.load(os.path.join("game_assets", "Giant Bombo.png"))
+        self.img = pygame.transform.rotozoom(self.img, 0, 3)
+        self.rect = self.img.get_rect(center = (350,100))
+        self.text = font.render('Press any key to start',False,(111,196,169))
+        self.text_rect = self.text.get_rect(center = (350,150))
+    
+    def draw(self):
+        screen.fill((94,129,162))
+        screen.blit(self.img, self.rect)
+        screen.blit(self.text, self.text_rect)
+    
+    def set_game_active(self, value):
+        self.__game_active = value
 
+    def get_game_active(self):
+        return self.__game_active
 def IScollision(mobx, moby, curx, cury, shoot):
     distance = math.sqrt((math.pow(mobx - curx, 2)) + (math.pow(moby - cury, 2)))
     if distance < 15 and shoot:
@@ -371,7 +389,8 @@ skill = Skill3()
 mob = []
 mixer.music.set_volume(0.2)
 #menu
-menu = menu()
+menu = StartMenu()
+menu1 = EndMenu()
 #game loop
 while player.play:
     for event in pygame.event.get():
