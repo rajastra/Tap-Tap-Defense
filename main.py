@@ -50,9 +50,7 @@ class Player():
     def game_over(self):
         mixer.music.stop()
         gvSound.play()
-        time.sleep(3)
-        global run
-        run = False
+        end_menu.set_game_active(False)
 
     def use_skill(self, cost):
         self.mana -= cost
@@ -67,9 +65,6 @@ class Player():
         screen.blit(score, (Player.textX, Player.textY))
         screen.blit(lives, (Player.textX, Player.textY + 35))
         screen.blit(mana, (Player.textX, Player.textY + 260))
-        if self.damage >= 5:
-            self.game_over()
-
 
 class BomboSapiens(ABC):
     spawn_rate = 90
@@ -368,7 +363,7 @@ class Skill3:
             list.clear()
 
 
-class menu:
+class StartMenu:
     def __init__(self):
         self.animation = 0
         self.__game_active = False
@@ -400,11 +395,52 @@ class menu:
         screen.blit(self.weapon_select, self.weapon_select_rect)
         screen.blit(self.skill_select, self.skill_select_rect)
 
+
+    def set_game_active(self, value):
+        self.__game_active = value
+        mixer.music.play(-1)
+        weapon.start()
+        mixer.music.set_volume(0.25)
+
+    def get_game_active(self):
+        return self.__game_active
+
+class EndMenu:
+    def __init__(self):
+        self.animation = 0
+        self.__game_active = True
+        self.img = []
+        self.rect = []
+        for i in range (4):
+            tempimage = pygame.image.load(os.path.join("game_assets", "giant" + str(i) + ".png"))
+            tempimage = pygame.transform.scale(tempimage, (150, 150))
+            tempimage = pygame.transform.rotate(tempimage, -180)
+            tempimage_rect = tempimage.get_rect(center=(350, 100))
+            self.img.append(tempimage)
+            self.rect.append(tempimage_rect)
+        self.text = font.render('GAME OVER', False, "white")
+        self.text2 = font.render('Press CAPSLOCK for Back to GAME', False, "white")
+        self.text3 = font.render('Press ESCAPE for EXIT', False, "white")
+        self.text_rect = self.text.get_rect(center=(350, 150))
+        self.text2_rect = self.text2.get_rect(center=(350, 200))
+        self.text3_rect = self.text3.get_rect(center=(350, 230))
+
+    def draw(self):
+        if self.animation < 3:
+            self.animation += 1
+        else:
+            self.animation = 0
+        screen.blit(self.img[self.animation], self.rect[self.animation])
+        screen.blit(self.text, self.text_rect)
+        screen.blit(self.text2, self.text2_rect)
+        screen.blit(self.text3, self.text3_rect)
+
     def set_game_active(self, value):
         self.__game_active = value
 
     def get_game_active(self):
         return self.__game_active
+
 
 
 def IScollision(mobx, moby, curx, cury, shoot):
@@ -421,10 +457,14 @@ def remove(list, i):
 
 
 # initiation
-menu = menu()
+start_menu = StartMenu()
+end_menu = EndMenu()
+player = Player()
+game = False
 mixer.music.play(-1)
 weapon = 0
 skill = 0
+mob = []
 # game loop
 run = True
 while run:
@@ -432,7 +472,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if menu.get_game_active():
+        if game == True:
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_r]:
                     weapon.reload()
@@ -457,6 +497,8 @@ while run:
                 if key[2]:
                     skill.active(mob, player.mana)
         else:
+            fast = False
+            FPS = 60
             if event.type == pygame.MOUSEBUTTONDOWN:
                 key = pygame.mouse.get_pressed()
                 mouse = pygame.mouse.get_pos()
@@ -464,29 +506,28 @@ while run:
                     if 305 <= mouse[0] <= 395:
                         if 180 <= mouse[1] <= 220:
                             if weapon == 0:
-                                menu.weapon_select = font.render("Revolver", True, white)
-                                menu.weapon_select_rect = menu.weapon_select.get_rect(center=(350, 200))
+                                start_menu.weapon_select = font.render("Revolver", True, white)
+                                start_menu.weapon_select_rect = start_menu.weapon_select.get_rect(center=(350, 200))
                                 weapon = 1
                             elif weapon == 1:
-                                menu.weapon_select = font.render("Glock", True, white)
-                                menu.weapon_select_rect = menu.weapon_select.get_rect(center=(350, 200))
+                                start_menu.weapon_select = font.render("Glock", True, white)
+                                start_menu.weapon_select_rect = start_menu.weapon_select.get_rect(center=(350, 200))
                                 weapon = 0
                         elif 230 <= mouse[1] <= 270:
                             if skill == 2:
-                                menu.skill_select = font.render("Skill1", True, white)
-                                menu.skill_select_rect = menu.skill_select.get_rect(center=(350, 250))
+                                start_menu.skill_select = font.render("Skill1", True, white)
+                                start_menu.skill_select_rect = start_menu.skill_select.get_rect(center=(350, 250))
                                 skill = 0
                             elif skill == 0:
-                                menu.skill_select = font.render("Skill2", True, white)
-                                menu.skill_select_rect = menu.skill_select.get_rect(center=(350, 250))
+                                start_menu.skill_select = font.render("Skill2", True, white)
+                                start_menu.skill_select_rect = start_menu.skill_select.get_rect(center=(350, 250))
                                 skill = 1
                             elif skill == 1:
-                                menu.skill_select = font.render("Skill3", True, white)
-                                menu.skill_select_rect = menu.skill_select.get_rect(center=(350, 250))
+                                start_menu.skill_select = font.render("Skill3", True, white)
+                                start_menu.skill_select_rect = start_menu.skill_select.get_rect(center=(350, 250))
                                 skill = 2
             if event.type == pygame.KEYDOWN:
-                fast = False
-                player = Player()
+                game = True
                 if weapon == 0:
                     weapon = Glock()
                 elif weapon == 1:
@@ -497,20 +538,27 @@ while run:
                     skill = Skill2()
                 elif skill == 2:
                     skill = Skill3()
-                mob = []
-                weapon.start()
-                mixer.music.set_volume(0.25)
                 pygame.mouse.set_visible(False)
-                menu.set_game_active(True)
+                start_menu.set_game_active(True)
+                end_menu.set_game_active(True)
+            if event.type == pygame.KEYDOWN:
+                if pygame.key.get_pressed()[pygame.K_CAPSLOCK]:
+                    game = True
+                    start_menu.set_game_active(True)
+                if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                    run = False
 
     # gameplay
-    if menu.get_game_active():
+    if game == True:
         screen.blit(rescaledBackground, (0, 0))
         weapon.update()
         for i in mob:
             i.update()
-        player.update()
 
+        if player.damage  == 5:
+            game = False
+            player.game_over()
+        player.update()
         BomboSapiens.add_mob += 1
         if BomboSapiens.add_mob == BomboSapiens.spawn_rate:
             x = random.randint(0, 1)
@@ -518,9 +566,17 @@ while run:
                 mob.append(NormalBombo())
             elif x == 1:
                 mob.append(GiantBombo())
-            BomboSapiens.add_mob = 0
-    else:
-        menu.draw()
+            BomboSapiens.add_mob = 0 
+
+    if(not start_menu.get_game_active()):
+        start_menu.draw()
+    if(not end_menu.get_game_active()):
+        player.damage = 0
+        player.score = 0
+        player.mana = 0
+        weapon.ammo = weapon.mag
+        mob.clear()
+        end_menu.draw()
 
     pygame.display.update()
     fpsClock.tick(FPS)
