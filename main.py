@@ -319,7 +319,7 @@ class Skill2:
         self.cost = 150
         self.dmg = 5
         self.effect = 30
-        self.sound = mixer.Sound(os.path.join("game_assets", "skill1.mp3"))
+        self.sound = mixer.Sound(os.path.join("game_assets", "electric_zap_001-6374.mp3"))
 
     def active(self, list, mana):
         if mana >= self.cost:
