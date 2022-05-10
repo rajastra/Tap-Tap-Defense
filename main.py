@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 pygame.init()
 
 # settings
-FPS = 60
+FPS = 30
 fpsClock = pygame.time.Clock()
 
 width = 700
@@ -332,35 +332,78 @@ class Skill1:
                 elif i.name == 'GB':
                     i.stun(self.effect)
 
+    def update(self):
+        pass
+
 
 class Skill2:
     def __init__(self):
+        self.ISactive = False
+        self.animate = 0
+        self.location = []
         self.cost = 150
         self.dmg = 5
         self.effect = 30
         self.sound = mixer.Sound(os.path.join("game_assets", "electric_zap_001-6374.mp3"))
+        self.image = []
+        for i in range(27):
+            tempimage = pygame.image.load(os.path.join("game_assets", "skill-2 (" + str(i + 1) + ").png"))
+            tempimage = pygame.transform.scale(tempimage, (80, 80))
+            self.image.append(tempimage)
 
     def active(self, list, mana):
         if mana >= self.cost:
+            self.ISactive = True
             player.use_skill(self.cost)
             self.sound.play()
             for i in list:
+                self.location.append([i.x, i.y])
                 i.take_damage(self.dmg)
                 i.stun(self.effect)
+
+    def update(self):
+        if self.ISactive:
+            for i in self.location:
+                screen.blit(self.image[self.animate], (i[0], i[1]))
+            self.animate += 1
+        if self.animate == len(self.image):
+            self.animate = 0
+            self.location = []
+            self.ISactive = False
 
 
 class Skill3:
     def __init__(self):
+        self.ISactive = False
+        self.animate = 0
+        self.location = []
         self.cost = 300
         self.sound = mixer.Sound(os.path.join("game_assets", "skill_chant.ogg"))
+        self.image = []
+        for i in range (7):
+            tempimage = pygame.image.load(os.path.join("game_assets", "skill3" + str(i) + ".png"))
+            tempimage = pygame.transform.scale(tempimage, (80, 80))
+            self.image.append(tempimage)
 
     def active(self, list, mana):
         if mana >= self.cost:
+            self.ISactive = True
             player.use_skill(self.cost)
             self.sound.play()
             for i in list:
+                self.location.append([i.x, i.y])
                 Player.get_kill(player)
             list.clear()
+
+    def update(self):
+        if self.ISactive:
+            for i in self.location:
+                screen.blit(self.image[self.animate], (i[0], i[1]))
+            self.animate += 1
+        if self.animate == len(self.image):
+            self.animate = 0
+            self.location = []
+            self.ISactive = False
 
 
 class StartMenu:
@@ -552,6 +595,7 @@ while run:
     if game == True:
         screen.blit(rescaledBackground, (0, 0))
         weapon.update()
+        skill.update()
         for i in mob:
             i.update()
 
