@@ -584,12 +584,11 @@ while run:
                 pygame.mouse.set_visible(False)
                 start_menu.set_game_active(True)
                 end_menu.set_game_active(True)
-            if event.type == pygame.KEYDOWN:
-                if pygame.key.get_pressed()[pygame.K_CAPSLOCK]:
-                    game = True
-                    start_menu.set_game_active(True)
-                if pygame.key.get_pressed()[pygame.K_ESCAPE]:
-                    run = False
+            if pygame.key.get_pressed()[pygame.K_CAPSLOCK]:
+                game = True
+                start_menu.set_game_active(True)
+            if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                run = False
 
     # gameplay
     if game == True:
