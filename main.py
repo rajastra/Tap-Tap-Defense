@@ -74,7 +74,7 @@ class Player():
 class BomboSapiens(ABC):
     spawn_rate = 90
     add_mob = 0
-    mob_pos = [15, 75, 135, 195, 255]
+    mob_pos = [5, 65, 125, 185, 245]
     explodeImage = []
     for i in range(9):
         tempImage = pygame.image.load(os.path.join("game_assets", "explosion0" + str(i) + ".png"))
@@ -82,10 +82,12 @@ class BomboSapiens(ABC):
         explodeImage.append(tempImage)
     explodeSound = mixer.Sound(os.path.join("game_assets", "explosion.mp3"))
     explodeDuration = 8
+    spot = pygame.image.load(os.path.join("game_assets", "spot.png"))
 
     def __init__(self, name, hp, spd, image):
         self.name = name
-        self.image = image
+        self.animation = 0
+        self.walk = image
         self.hp = hp
         self.__spd = spd
         self.move = self.__spd
@@ -97,6 +99,11 @@ class BomboSapiens(ABC):
 
     @abstractmethod
     def maju(self):
+        if self.animation < len(self.walk) - 1:
+            self.animation += 1
+        else:
+            self.animation = 0
+        self.image = self.walk[self.animation]
         self.x -= self.move
 
     @abstractmethod
@@ -122,8 +129,8 @@ class BomboSapiens(ABC):
 
     @abstractmethod
     def update(self):
-        self.maju()
-        screen.blit(self.image, (self.x, self.y))
+        if not self.ISexplode:
+            self.maju()
         if self.x < Player.base and not self.ISexplode:
             self.explode()
             Player.take_damage(player)
@@ -139,12 +146,18 @@ class BomboSapiens(ABC):
                 self.ISstun = False
                 self.move = self.__spd
                 self.time = 0
+        screen.blit(self.image, (self.x, self.y))
+        screen.blit(BomboSapiens.spot, (self.x, self.y))
 
 
 class NormalBombo(BomboSapiens):
     def __init__(self):
         name = "NB"
-        image = pygame.image.load(os.path.join("game_assets", "Normal Bombo.png"))
+        image = []
+        for i in range(11):
+            tempimage = pygame.image.load(os.path.join("game_assets", "bombo" + str(i + 1) + ".png"))
+            tempimage = pygame.transform.scale(tempimage, (50, 50))
+            image.append(tempimage)
         hp = 10
         spd = 1
         super().__init__(name, hp, spd, image)
@@ -166,9 +179,19 @@ class NormalBombo(BomboSapiens):
 
 
 class GiantBombo(BomboSapiens):
+    angryimage = []
+    for i in range(4, 8):
+        tempimage = pygame.image.load(os.path.join("game_assets", "giant" + str(i) + ".png"))
+        tempimage = pygame.transform.scale(tempimage, (80, 80))
+        angryimage.append(tempimage)
+
     def __init__(self):
         name = "GB"
-        image = pygame.image.load(os.path.join("game_assets", "Giant Bombo.png"))
+        image = []
+        for i in range(4):
+            tempimage = pygame.image.load(os.path.join("game_assets", "giant" + str(i) + ".png"))
+            tempimage = pygame.transform.scale(tempimage, (80, 80))
+            image.append(tempimage)
         self.angry_sound = mixer.Sound(os.path.join("game_assets", "Giant Bombo Angry.mp3"))
         hp = 30
         spd = 0.5
@@ -179,7 +202,8 @@ class GiantBombo(BomboSapiens):
 
     def take_damage(self, dmg):
         self.angry_sound.play()
-        self.move += 0.5
+        self.walk = GiantBombo.angryimage
+        self.move += 1
         super().take_damage(dmg)
 
     def explode(self):
@@ -346,10 +370,16 @@ class Skill3:
 
 class menu:
     def __init__(self):
+        self.animation = 0
         self.__game_active = False
-        self.img = pygame.image.load(os.path.join("game_assets", "Giant Bombo.png"))
-        self.img = pygame.transform.rotozoom(self.img, 0, 3)
-        self.rect = self.img.get_rect(center=(350, 100))
+        self.img = []
+        self.rect = []
+        for i in range (4):
+            tempimage = pygame.image.load(os.path.join("game_assets", "giant" + str(i) + ".png"))
+            tempimage = pygame.transform.scale(tempimage, (150, 150))
+            tempimage_rect = tempimage.get_rect(center=(350, 100))
+            self.img.append(tempimage)
+            self.rect.append(tempimage_rect)
         self.text = font.render('Press any key to start', False, (111, 196, 169))
         self.text_rect = self.text.get_rect(center=(350, 150))
         self.weapon_select = font.render("Glock", True, white)
@@ -358,8 +388,12 @@ class menu:
         self.skill_select_rect = self.skill_select.get_rect(center=(350, 250))
 
     def draw(self):
+        if self.animation < 3:
+            self.animation += 1
+        else:
+            self.animation = 0
         screen.fill((94, 129, 162))
-        screen.blit(self.img, self.rect)
+        screen.blit(self.img[self.animation], self.rect[self.animation])
         screen.blit(self.text, self.text_rect)
         pygame.draw.rect(screen, black, [305, 180, 90, 40])
         pygame.draw.rect(screen, black, [305, 230, 90, 40])
@@ -472,10 +506,10 @@ while run:
     # gameplay
     if menu.get_game_active():
         screen.blit(rescaledBackground, (0, 0))
-        player.update()
         weapon.update()
         for i in mob:
             i.update()
+        player.update()
 
         BomboSapiens.add_mob += 1
         if BomboSapiens.add_mob == BomboSapiens.spawn_rate:
