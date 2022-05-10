@@ -23,11 +23,11 @@ pygame.display.set_icon(icon)
 mixer.music.load(os.path.join("game_assets", "music.ogg"))
 gvSound = mixer.Sound(os.path.join("game_assets", "gameover.mp3"))
 
-pygame.mouse.set_visible(False)
-
 font_size = 20
 font = pygame.font.Font("freesansbold.ttf", font_size)
-font_color = (255, 255, 255)
+white = (255, 255, 255)
+black = (0, 0, 0)
+
 
 class Player():
     textX = 10
@@ -35,7 +35,6 @@ class Player():
     base = 200
 
     def __init__(self):
-        self.play = True
         self.score = 0
         self.damage = 0
         self.mana = 0
@@ -51,8 +50,9 @@ class Player():
     def game_over(self):
         mixer.music.stop()
         gvSound.play()
-        self.play = False
         time.sleep(3)
+        global run
+        run = False
 
     def use_skill(self, cost):
         self.mana -= cost
@@ -60,15 +60,16 @@ class Player():
     def update(self):
         self.x, self.y = pygame.mouse.get_pos()
         crosshair = pygame.image.load(os.path.join("game_assets", "crosshair.png")).convert_alpha()
-        score = font.render("Score : " + str(self.score), True, font_color)
-        lives = font.render("Lives : " + str(5 - self.damage), True, font_color)
-        mana = font.render("Mana : " + str(self.mana) + "/300", True, font_color)
+        score = font.render("Score : " + str(self.score), True, white)
+        lives = font.render("Lives : " + str(5 - self.damage), True, white)
+        mana = font.render("Mana : " + str(self.mana) + "/300", True, white)
         screen.blit(crosshair, (self.x, self.y))
         screen.blit(score, (Player.textX, Player.textY))
         screen.blit(lives, (Player.textX, Player.textY + 35))
         screen.blit(mana, (Player.textX, Player.textY + 260))
         if self.damage >= 5:
             self.game_over()
+
 
 class BomboSapiens(ABC):
     spawn_rate = 90
@@ -139,6 +140,7 @@ class BomboSapiens(ABC):
                 self.move = self.__spd
                 self.time = 0
 
+
 class NormalBombo(BomboSapiens):
     def __init__(self):
         name = "NB"
@@ -161,6 +163,7 @@ class NormalBombo(BomboSapiens):
 
     def update(self):
         super().update()
+
 
 class GiantBombo(BomboSapiens):
     def __init__(self):
@@ -188,6 +191,7 @@ class GiantBombo(BomboSapiens):
 
     def update(self):
         super().update()
+
 
 class Senjata(ABC):
     def __init__(self, name, mag, dmg, time, start, reload, shoot):
@@ -222,7 +226,7 @@ class Senjata(ABC):
 
     @abstractmethod
     def update(self):
-        ammo = font.render("Ammo : " + str(self.ammo) + "/" + str(self.mag), True, font_color)
+        ammo = font.render("Ammo : " + str(self.ammo) + "/" + str(self.mag), True, white)
         screen.blit(ammo, (Player.textX, Player.textY + 225))
         if self.ammo == 0 and not self.ISreload:
             self.reload()
@@ -233,6 +237,7 @@ class Senjata(ABC):
             self.ISshoot = True
             self.ISreload = False
             self.time = 0
+
 
 class Glock(Senjata):
     def __init__(self):
@@ -256,6 +261,7 @@ class Glock(Senjata):
 
     def update(self):
         super().update()
+
 
 class Revolver(Senjata):
     def __init__(self):
@@ -289,6 +295,7 @@ class Revolver(Senjata):
     def update(self):
         super().update()
 
+
 class Skill1:
     def __init__(self):
         self.cost = 100
@@ -306,6 +313,7 @@ class Skill1:
                 elif i.name == 'GB':
                     i.stun(self.effect)
 
+
 class Skill2:
     def __init__(self):
         self.cost = 150
@@ -321,6 +329,7 @@ class Skill2:
                 i.take_damage(self.dmg)
                 i.stun(self.effect)
 
+
 class Skill3:
     def __init__(self):
         self.cost = 300
@@ -334,6 +343,7 @@ class Skill3:
                 Player.get_kill(player)
             list.clear()
 
+
 class menu:
     def __init__(self):
         self.__game_active = False
@@ -342,19 +352,26 @@ class menu:
         self.rect = self.img.get_rect(center=(350, 100))
         self.text = font.render('Press any key to start', False, (111, 196, 169))
         self.text_rect = self.text.get_rect(center=(350, 150))
+        self.weapon_select = font.render("Glock", True, white)
+        self.weapon_select_rect = self.weapon_select.get_rect(center=(350, 200))
+        self.skill_select = font.render("Skill1", True, white)
+        self.skill_select_rect = self.skill_select.get_rect(center=(350, 250))
 
     def draw(self):
         screen.fill((94, 129, 162))
         screen.blit(self.img, self.rect)
         screen.blit(self.text, self.text_rect)
+        pygame.draw.rect(screen, black, [305, 180, 90, 40])
+        pygame.draw.rect(screen, black, [305, 230, 90, 40])
+        screen.blit(self.weapon_select, self.weapon_select_rect)
+        screen.blit(self.skill_select, self.skill_select_rect)
 
     def set_game_active(self, value):
         self.__game_active = value
-        weapon.start()
-        mixer.music.set_volume(0.25)
 
     def get_game_active(self):
         return self.__game_active
+
 
 def IScollision(mobx, moby, curx, cury, shoot):
     distance = math.sqrt((math.pow(mobx - curx, 2)) + (math.pow(moby - cury, 2)))
@@ -363,24 +380,24 @@ def IScollision(mobx, moby, curx, cury, shoot):
     else:
         return False
 
+
 def remove(list, i):
     list.remove(i)
     return list
 
+
 # initiation
 menu = menu()
-fast = False
-player = Player()
-weapon = Revolver()
-skill = Skill3()
-mob = []
 mixer.music.play(-1)
+weapon = 0
+skill = 0
 # game loop
-while player.play:
+run = True
+while run:
     # control
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            player.play = False
+            run = False
         if menu.get_game_active():
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_r]:
@@ -406,7 +423,50 @@ while player.play:
                 if key[2]:
                     skill.active(mob, player.mana)
         else:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                key = pygame.mouse.get_pressed()
+                mouse = pygame.mouse.get_pos()
+                if key[0]:
+                    if 305 <= mouse[0] <= 395:
+                        if 180 <= mouse[1] <= 220:
+                            if weapon == 0:
+                                menu.weapon_select = font.render("Revolver", True, white)
+                                menu.weapon_select_rect = menu.weapon_select.get_rect(center=(350, 200))
+                                weapon = 1
+                            elif weapon == 1:
+                                menu.weapon_select = font.render("Glock", True, white)
+                                menu.weapon_select_rect = menu.weapon_select.get_rect(center=(350, 200))
+                                weapon = 0
+                        elif 230 <= mouse[1] <= 270:
+                            if skill == 2:
+                                menu.skill_select = font.render("Skill1", True, white)
+                                menu.skill_select_rect = menu.skill_select.get_rect(center=(350, 250))
+                                skill = 0
+                            elif skill == 0:
+                                menu.skill_select = font.render("Skill2", True, white)
+                                menu.skill_select_rect = menu.skill_select.get_rect(center=(350, 250))
+                                skill = 1
+                            elif skill == 1:
+                                menu.skill_select = font.render("Skill3", True, white)
+                                menu.skill_select_rect = menu.skill_select.get_rect(center=(350, 250))
+                                skill = 2
             if event.type == pygame.KEYDOWN:
+                fast = False
+                player = Player()
+                if weapon == 0:
+                    weapon = Glock()
+                elif weapon == 1:
+                    weapon = Revolver()
+                if skill == 0:
+                    skill = Skill1()
+                elif skill == 1:
+                    skill = Skill2()
+                elif skill == 2:
+                    skill = Skill3()
+                mob = []
+                weapon.start()
+                mixer.music.set_volume(0.25)
+                pygame.mouse.set_visible(False)
                 menu.set_game_active(True)
 
     # gameplay
