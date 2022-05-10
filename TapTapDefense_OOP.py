@@ -330,6 +330,26 @@ class Skill3:
             self.sound.play()
             for i in list:
                 i.take_damage(self.dmg)
+class menu:
+    def __init__(self):
+        self.__game_active = False
+        self.img = pygame.image.load(os.path.join("game_assets", "Giant Bombo.png"))
+        self.img = pygame.transform.rotozoom(self.img, 0, 3)
+        self.rect = self.img.get_rect(center = (350,100))
+        self.text = font.render('Press any key to start',False,(111,196,169))
+        self.text_rect = self.text.get_rect(center = (350,150))
+    
+    def draw(self):
+        screen.fill((94,129,162))
+        screen.blit(self.img, self.rect)
+        screen.blit(self.text, self.text_rect)
+    
+    def set_game_active(self, value):
+        self.__game_active = value
+
+    def get_game_active(self):
+        return self.__game_active
+
 
 def IScollision(mobx, moby, curx, cury, shoot):
     distance = math.sqrt((math.pow(mobx - curx, 2)) + (math.pow(moby - cury, 2)))
@@ -350,52 +370,60 @@ weapon.start()
 skill = Skill3()
 mob = []
 mixer.music.set_volume(0.2)
+#menu
+menu = menu()
 #game loop
 while player.play:
-    screen.blit(rescaledBackground, (0, 0))
-    player.update()
-    weapon.update()
-    for i in mob:
-        i.update()
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             player.play = False
-        if event.type == pygame.KEYDOWN:
-            if pygame.key.get_pressed()[pygame.K_r]:
-                weapon.reload()
-            if pygame.key.get_pressed()[pygame.K_p]:
-                if not fast:
-                    fast = True
-                    FPS = 480
-                elif fast:
-                    fast = False
+        if menu.get_game_active():
+            if event.type == pygame.KEYDOWN:
+                if pygame.key.get_pressed()[pygame.K_r]:
+                    weapon.reload()
+                if pygame.key.get_pressed()[pygame.K_p]:
+                    if not fast:
+                        fast = True
+                        FPS = 480
+                    elif fast:
+                        fast = False
+                        FPS = 60
+                if pygame.key.get_pressed()[pygame.K_o]:
+                    player.mana += (300 - player.mana)
+            if event.type == pygame.KEYUP:
+                if pygame.key.get_pressed()[pygame.K_p]:
                     FPS = 60
-            if pygame.key.get_pressed()[pygame.K_o]:
-                player.mana += (300 - player.mana)
-        if event.type == pygame.KEYUP:
-            if pygame.key.get_pressed()[pygame.K_p]:
-                FPS = 60
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            key = pygame.mouse.get_pressed()
-            if key[0]:
-                weapon.shoot()
-                for i in mob:
-                    if IScollision(i.x, i.y, player.x, player.y, weapon.ISshoot):
-                        i.take_damage(weapon.dmg)
-                        if weapon.name == 'R' and weapon.boost <= 5:
-                            weapon.boost += 1
-            if key[2]:
-                skill.active(mob, player.mana)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                key = pygame.mouse.get_pressed()
+                if key[0]:
+                    weapon.shoot()
+                    for i in mob:
+                        if IScollision(i.x, i.y, player.x, player.y, weapon.ISshoot):
+                            i.take_damage(weapon.dmg)
+                            if weapon.name == 'R' and weapon.boost <= 5:
+                                weapon.boost += 1
+                if key[2]:
+                    skill.active(mob, player.mana)
+        else:
+            if event.type == pygame.KEYDOWN:
+                menu.set_game_active(True)
+    if menu.get_game_active():
+        screen.blit(rescaledBackground, (0, 0))
+        player.update()
+        weapon.update()
+        for i in mob:
+            i.update()
 
-    BomboSapiens.add_mob += 1
-    if BomboSapiens.add_mob == BomboSapiens.spawn_rate:
-        x = random.randint(0, 1)
-        if x == 0:
-            mob.append(NormalBombo())
-        elif x == 1:
-            mob.append(GiantBombo())
-        BomboSapiens.add_mob = 0
+        BomboSapiens.add_mob += 1
+        if BomboSapiens.add_mob == BomboSapiens.spawn_rate:
+            x = random.randint(0, 1)
+            if x == 0:
+                mob.append(NormalBombo())
+            elif x == 1:
+                mob.append(GiantBombo())
+            BomboSapiens.add_mob = 0
+    else:
+        menu.draw()
 
     pygame.display.update()
     fpsClock.tick(FPS)
