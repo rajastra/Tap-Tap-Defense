@@ -71,6 +71,12 @@ class Player():
         self.score = 0
         self.damage = 0
         self.mana = 0
+        self.crosshair = pygame.image.load(os.path.join("game_assets", "crosshair.png")).convert_alpha()
+        self.img = []
+        for i in range(4):
+            tempImage = pygame.image.load(os.path.join("game_assets", "castle_" + str(i) + ".png"))
+            tempImage = pygame.transform.scale(tempImage, (250, 250))
+            self.img.append(tempImage)
 
     def get_kill(self):
         self.score += 1
@@ -85,13 +91,11 @@ class Player():
 
     def update(self, screen, font):
         self.x, self.y = pygame.mouse.get_pos()
-        crosshair = pygame.image.load(os.path.join("game_assets", "crosshair.png")).convert_alpha()
         score = font.render("Score : " + str(self.score), True, white)
-        lives = font.render("Lives : " + str(5 - self.damage), True, white)
         mana = font.render("Mana : " + str(self.mana) + "/300", True, white)
-        screen.blit(crosshair, (self.x, self.y))
+        screen.blit(self.img[self.damage], (0, 25))
+        screen.blit(self.crosshair, (self.x, self.y))
         screen.blit(score, (textX, textY))
-        screen.blit(lives, (textX, textY + 35))
         screen.blit(mana, (textX, textY + 260))
 
 class BomboSapiens(ABC):
@@ -207,7 +211,7 @@ class GiantBombo(BomboSapiens):
     angryimage = []
     for i in range(4, 8):
         tempimage = pygame.image.load(os.path.join("game_assets", "giant" + str(i) + ".png"))
-        tempimage = pygame.transform.scale(tempimage, (80, 80))
+        tempimage = pygame.transform.scale(tempimage, (50, 50))
         angryimage.append(tempimage)
 
     def __init__(self):

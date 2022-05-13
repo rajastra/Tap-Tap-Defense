@@ -142,16 +142,16 @@ class Game:
         self.waiting = True
         while self.waiting:
             self.screen.blit(self.rescaled_background_image, (0, 0))
-            self.weapon.update(self.screen, self.font)
             for i in self.mob:
                 i.update(self.screen, self.player, self.mob, i)
-            if self.player.damage == 5:
+            if self.player.damage == 3:
                 mixer.music.stop()
                 self.gameover_sound.play()
                 time.sleep(3)
                 self.section = 2
                 self.waiting = False
             self.player.update(self.screen, self.font)
+            self.weapon.update(self.screen, self.font)
             self.skill.update(self.screen)
 
             self.events(1)
