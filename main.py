@@ -70,6 +70,7 @@ class Game:
                     if key[2]:
                         self.skill.active(self.player, self.mob, self.player.mana)
             elif section == 0:
+                pygame.mouse.set_visible(True)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     key = pygame.mouse.get_pressed()
                     mouse = pygame.mouse.get_pos()
