@@ -1,8 +1,6 @@
-import time
-
 import pygame
 from pygame import mixer
-import os, math
+import os, math, time
 from settings import *
 from classes import *
 
