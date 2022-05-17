@@ -29,7 +29,7 @@ class Game:
         self.font = pygame.font.Font(font_name, font_size)
 
         #gameplay setup
-        self.background_image = pygame.image.load(os.path.join("game_assets", "background.jpg"))
+        self.background_image = pygame.image.load(os.path.join("game_assets", "background.png"))
         self.rescaled_background_image = pygame.transform.scale(self.background_image, (width, height))
         self.gameover_sound = mixer.Sound(os.path.join("game_assets", "gameover.mp3"))
 

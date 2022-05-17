@@ -42,18 +42,19 @@ class EndMenu:
         self.animation = 0
         self.img = []
         self.rect = []
+        my_font = pygame.font.SysFont(font_name, 26)
         for i in range (4):
-            tempimage = pygame.image.load(os.path.join("game_assets", "giant" + str(i + 4) + ".png"))
-            tempimage = pygame.transform.scale(tempimage, (150, 150))
-            tempimage_rect = tempimage.get_rect(center=(350, 100))
+            tempimage = pygame.image.load(os.path.join("game_assets", "castle_3.png"))
+            tempimage = pygame.transform.scale(tempimage, (200, 200))
+            tempimage_rect = tempimage.get_rect(center=(350, 90))
             self.img.append(tempimage)
             self.rect.append(tempimage_rect)
         self.text = font.render('GAME OVER', False, darker_cyan)
-        self.text2 = font.render('Press CAPSLOCK to replay the game', False, white)
-        self.text3 = font.render('Press ESC to exit', False, white)
-        self.text_rect = self.text.get_rect(center=(350, 150))
-        self.text2_rect = self.text2.get_rect(center=(350, 200))
-        self.text3_rect = self.text3.get_rect(center=(350, 230))
+        self.text2 = my_font.render('Press CAPSLOCK to replay the game', False, white)
+        self.text3 = my_font.render('Press ESC to exit', False, white)
+        self.text_rect = self.text.get_rect(center=(350, 210))
+        self.text2_rect = self.text2.get_rect(center=(350, 240))
+        self.text3_rect = self.text3.get_rect(center=(350, 270))
 
     def draw(self, screen):
         if self.animation < 3:
