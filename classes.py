@@ -81,8 +81,8 @@ class Player():
 
     def get_kill(self):
         self.score += 1
-        if self.mana != 300:
-            self.mana += 10
+        if self.mana != 10:
+            self.mana += 1
 
     def take_damage(self):
         self.damage += 1
@@ -91,9 +91,14 @@ class Player():
         self.mana -= cost
 
     def update(self, screen, font):
+        temp = ""
+        for i in range(self.mana):
+            temp += "[]"
         self.x, self.y = pygame.mouse.get_pos()
+        self.x -= 30
+        self.y -= 30
         score = font.render("Score : " + str(self.score), True, white)
-        mana = font.render("Mana : " + str(self.mana) + "/300", True, white)
+        mana = font.render("Mana : " + temp, True, white)
         screen.blit(self.img[self.damage], (0, 25))
         screen.blit(self.crosshair, (self.x, self.y))
         screen.blit(score, (textX, textY))
@@ -286,7 +291,10 @@ class Senjata(ABC):
 
     @abstractmethod
     def update(self, screen, font):
-        ammo = font.render("Ammo : " + str(self.ammo) + "/" + str(self.mag), True, white)
+        temp = ""
+        for i in range(self.ammo):
+            temp += "[||) "
+        ammo = font.render("Ammo : " + temp, True, white)
         screen.blit(ammo, (textX, textY + (4 * space)))
         if self.ammo == 0 and not self.isreload:
             self.reload()
@@ -339,12 +347,12 @@ class Revolver(Senjata):
     def start(self):
         super().start()
 
-    def shoot(self):
+    def shoot(self, list, i):
         super().shoot()
 
     def reload(self):
         if not self.isreload:
-            self.time += (30 * self.boost)
+            self.time += (10 * self.boost)
             self.reload_sound[self.boost].play()
             self.boost = 0
             self.isreload = True
@@ -356,7 +364,7 @@ class Revolver(Senjata):
 class Skill1:
     def __init__(self):
         self.name = '0'
-        self.cost = 100
+        self.cost = 3
         self.knockback = 100
         self.effect = 15
         self.sound = mixer.Sound(os.path.join("game_assets", "skill1.mp3"))
@@ -380,7 +388,7 @@ class Skill2:
         self.isactive = False
         self.animate = 0
         self.location = []
-        self.cost = 150
+        self.cost = 5
         self.dmg = 5
         self.effect = 30
         self.sound = mixer.Sound(os.path.join("game_assets", "electric_zap_001-6374.mp3"))
@@ -416,7 +424,7 @@ class Skill3:
         self.isactive = False
         self.animate = 0
         self.location = []
-        self.cost = 300
+        self.cost = 10
         self.sound = mixer.Sound(os.path.join("game_assets", "skill_chant.ogg"))
         self.image = []
         for i in range (7):

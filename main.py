@@ -55,7 +55,7 @@ class Game:
                         else:
                             self.FPS = 30
                     if pygame.key.get_pressed()[pygame.K_o]:
-                        self.player.mana += (300 - self.player.mana)
+                        self.player.mana += (10 - self.player.mana)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     key = pygame.mouse.get_pressed()
                     if key[0]:

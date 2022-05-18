@@ -17,7 +17,7 @@ textY = 310
 space = 15
 base = 200
 
-spawn_rate = 90
+spawn_rate = 45
 mob_position = [5, 65, 125, 185, 245]
 giant_bombo_size = (75, 75)
 normal_bombo_size = (60, 60)
