@@ -77,27 +77,32 @@ class Game:
                     if key[0]:
                         if 305 <= mouse[0] <= 395:
                             if 180 <= mouse[1] <= 220:
-                                if self.weapon_selection == 0:
+                                if self.weapon.name == 'G':
                                     self.sm.weapon_select = self.font.render("Revolver", True, white)
                                     self.sm.weapon_select_rect = self.sm.weapon_select.get_rect(center=(350, 200))
-                                    self.weapon_selection = 1
-                                elif self.weapon_selection == 1:
+                                    self.weapon = Revolver()
+                                    self.weapon.shoot_sound.play()
+                                elif self.weapon.name == 'R':
                                     self.sm.weapon_select = self.font.render("Glock", True, white)
                                     self.sm.weapon_select_rect = self.sm.weapon_select.get_rect(center=(350, 200))
-                                    self.weapon_selection = 0
+                                    self.weapon = Glock()
+                                    self.weapon.shoot_sound.play()
                             elif 230 <= mouse[1] <= 270:
-                                if self.skill_selection == 2:
+                                if self.skill.name == '2':
                                     self.sm.skill_select = self.font.render("Skill1", True, white)
                                     self.sm.skill_select_rect = self.sm.skill_select.get_rect(center=(350, 250))
-                                    self.skill_selection = 0
-                                elif self.skill_selection == 0:
+                                    self.skill = Skill1()
+                                    self.skill.sound.play()
+                                elif self.skill.name == '0':
                                     self.sm.skill_select = self.font.render("Skill2", True, white)
                                     self.sm.skill_select_rect = self.sm.skill_select.get_rect(center=(350, 250))
-                                    self.skill_selection = 1
-                                elif self.skill_selection == 1:
+                                    self.skill = Skill2()
+                                    self.skill.sound.play()
+                                elif self.skill.name == '1':
                                     self.sm.skill_select = self.font.render("Skill3", True, white)
                                     self.sm.skill_select_rect = self.sm.skill_select.get_rect(center=(350, 250))
-                                    self.skill_selection = 2
+                                    self.skill = Skill3()
+                                    self.skill.sound.play()
                 if event.type == pygame.KEYDOWN:
                     self.waiting = False
                     self.section = 1
@@ -114,8 +119,8 @@ class Game:
         self.sm = StartMenu(self.font)
         mixer.music.set_volume(1)
         mixer.music.play(-1)
-        self.weapon_selection = 0
-        self.skill_selection = 0
+        self.weapon = Glock()
+        self.skill = Skill1()
         self.waiting = True
         while self.waiting:
             self.sm.draw(self.screen)
@@ -125,16 +130,6 @@ class Game:
 
     def gameplay(self):
         self.player = Player()
-        if self.weapon_selection == 0:
-            self.weapon = Glock()
-        elif self.weapon_selection == 1:
-            self.weapon = Revolver()
-        if self.skill_selection == 0:
-            self.skill = Skill1()
-        elif self.skill_selection == 1:
-            self.skill = Skill2()
-        elif self.skill_selection == 2:
-            self.skill = Skill3()
         self.mob = []
         self.add_mob = 0
         self.weapon.start()

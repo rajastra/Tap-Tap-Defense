@@ -355,6 +355,7 @@ class Revolver(Senjata):
 
 class Skill1:
     def __init__(self):
+        self.name = '0'
         self.cost = 100
         self.knockback = 100
         self.effect = 15
@@ -375,6 +376,7 @@ class Skill1:
 
 class Skill2:
     def __init__(self):
+        self.name = '1'
         self.isactive = False
         self.animate = 0
         self.location = []
@@ -410,6 +412,7 @@ class Skill2:
 
 class Skill3:
     def __init__(self):
+        self.name = '2'
         self.isactive = False
         self.animate = 0
         self.location = []
