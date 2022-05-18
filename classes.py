@@ -45,7 +45,7 @@ class EndMenu:
         my_font = pygame.font.SysFont(font_name, 26)
         for i in range (4):
             tempimage = pygame.image.load(os.path.join("game_assets", "castle_3.png"))
-            tempimage = pygame.transform.scale(tempimage, (200, 200))
+            tempimage = pygame.transform.scale(tempimage, (180, 180))
             tempimage_rect = tempimage.get_rect(center=(350, 90))
             self.img.append(tempimage)
             self.rect.append(tempimage_rect)
@@ -97,7 +97,7 @@ class Player():
         screen.blit(self.img[self.damage], (0, 25))
         screen.blit(self.crosshair, (self.x, self.y))
         screen.blit(score, (textX, textY))
-        screen.blit(mana, (textX, textY + 260))
+        screen.blit(mana, (textX, textY + (2 * space)))
 
 class BomboSapiens(ABC):
     def __init__(self, name, hp, spd, image):
@@ -114,7 +114,6 @@ class BomboSapiens(ABC):
             self.explodeImage.append(tempImage)
         self.explode_sound = mixer.Sound(os.path.join("game_assets", "explosion.mp3"))
         self.explode_duration = 8
-        self.spot = pygame.image.load(os.path.join("game_assets", "spot.png"))
         self.isexplode = False
         self.isstun = False
         self.time = 0
@@ -176,7 +175,6 @@ class BomboSapiens(ABC):
                 self.move = self.__spd
                 self.time = 0
         screen.blit(self.image, (self.x, self.y))
-        screen.blit(self.spot, (self.x, self.y))
 
 class NormalBombo(BomboSapiens):
     def __init__(self):
@@ -184,10 +182,11 @@ class NormalBombo(BomboSapiens):
         image = []
         for i in range(11):
             tempimage = pygame.image.load(os.path.join("game_assets", "bombo" + str(i + 1) + ".png"))
-            tempimage = pygame.transform.scale(tempimage, (50, 50))
+            tempimage = pygame.transform.scale(tempimage, normal_bombo_size)
             image.append(tempimage)
         hp = 10
-        spd = 1
+        spd = 2
+        self.spot = [()]
         super().__init__(name, hp, spd, image)
 
     def maju(self):
@@ -207,12 +206,13 @@ class NormalBombo(BomboSapiens):
 
     def update(self, screen, player, list, i):
         super().update(screen, player, list, i)
+        self.spot[0] = (self.x - 2, self.y - 2)
 
 class GiantBombo(BomboSapiens):
     angryimage = []
     for i in range(4, 8):
         tempimage = pygame.image.load(os.path.join("game_assets", "giant" + str(i) + ".png"))
-        tempimage = pygame.transform.scale(tempimage, (50, 50))
+        tempimage = pygame.transform.scale(tempimage, giant_bombo_size)
         angryimage.append(tempimage)
 
     def __init__(self):
@@ -220,11 +220,12 @@ class GiantBombo(BomboSapiens):
         image = []
         for i in range(4):
             tempimage = pygame.image.load(os.path.join("game_assets", "giant" + str(i) + ".png"))
-            tempimage = pygame.transform.scale(tempimage, (80, 80))
+            tempimage = pygame.transform.scale(tempimage, giant_bombo_size)
             image.append(tempimage)
         self.angry_sound = mixer.Sound(os.path.join("game_assets", "Giant Bombo Angry.mp3"))
         hp = 30
-        spd = 0.5
+        spd = 1
+        self.spot = [(), (), ()]
         super().__init__(name, hp, spd, image)
 
     def maju(self):
@@ -248,6 +249,9 @@ class GiantBombo(BomboSapiens):
 
     def update(self, screen, player, list, i):
         super().update(screen, player, list, i)
+        self.spot[0] = (self.x - 10, self.y + 5)
+        self.spot[1] = (self.x - 3, self.y + 5)
+        self.spot[2] = (self.x + 5, self.y + 5)
 
 class Senjata(ABC):
     def __init__(self, name, mag, dmg, time, start, reload, shoot):
@@ -283,7 +287,7 @@ class Senjata(ABC):
     @abstractmethod
     def update(self, screen, font):
         ammo = font.render("Ammo : " + str(self.ammo) + "/" + str(self.mag), True, white)
-        screen.blit(ammo, (textX, textY + 225))
+        screen.blit(ammo, (textX, textY + (4 * space)))
         if self.ammo == 0 and not self.isreload:
             self.reload()
         if self.isreload:
@@ -299,7 +303,7 @@ class Glock(Senjata):
         name = 'G'
         mag = 15
         dmg = 10
-        time = 90
+        time = 45
         start = mixer.Sound(os.path.join("game_assets", "glock_start.mp3"))
         reload = mixer.Sound(os.path.join("game_assets", "glock_reload.mp3"))
         shoot = mixer.Sound(os.path.join("game_assets", "glock_shoot.mp3"))
@@ -322,7 +326,7 @@ class Revolver(Senjata):
         name = 'R'
         mag = 6
         dmg = 30
-        time = 300
+        time = 150
         start = mixer.Sound(os.path.join("game_assets", "revolver_start.mp3"))
         reload = []
         for i in range(7):
@@ -390,7 +394,7 @@ class Skill2:
             player.use_skill(self.cost)
             self.sound.play()
             for i in list:
-                self.location.append([i.x, i.y])
+                self.location.append([i.x - 3, i.y - 2])
                 i.take_damage(player, self.dmg)
                 i.stun(self.effect)
 

@@ -30,11 +30,11 @@ class Game:
 
         #gameplay setup
         self.background_image = pygame.image.load(os.path.join("game_assets", "background.png"))
-        self.rescaled_background_image = pygame.transform.scale(self.background_image, (width, height))
+        self.rescaled_background_image = pygame.transform.scale(self.background_image, (width, height - 100))
         self.gameover_sound = mixer.Sound(os.path.join("game_assets", "gameover.mp3"))
 
-    def iscollision(self, mobx, moby, curx, cury, shoot):
-        distance = math.sqrt((math.pow(mobx - curx, 2)) + (math.pow(moby - cury, 2)))
+    def iscollision(self, mob, curx, cury, shoot):
+        distance = math.sqrt((math.pow(mob[0] - curx, 2)) + (math.pow(mob[1] - cury, 2)))
         if distance < 15 and shoot:
             return True
         else:
@@ -61,10 +61,12 @@ class Game:
                     if key[0]:
                         self.weapon.shoot()
                         for i in self.mob:
-                            if self.iscollision(i.x, i.y, self.player.x, self.player.y, self.weapon.isshoot):
-                                i.take_damage(self.player, self.weapon.dmg)
-                                if self.weapon.name == 'R' and self.weapon.boost <= 5:
-                                    self.weapon.boost += 1
+                            for j in i.spot:
+                                if self.iscollision(j, self.player.x, self.player.y, self.weapon.isshoot):
+                                    i.take_damage(self.player, self.weapon.dmg)
+                                    if self.weapon.name == 'R' and self.weapon.boost <= 5:
+                                        self.weapon.boost += 1
+                                    break
                     if key[2]:
                         self.skill.active(self.player, self.mob, self.player.mana)
             elif section == 0:
@@ -149,9 +151,10 @@ class Game:
                 time.sleep(3)
                 self.section = 2
                 self.waiting = False
+            self.skill.update(self.screen)
+            pygame.draw.rect(self.screen, black, [0, 300, 700, 131])
             self.player.update(self.screen, self.font)
             self.weapon.update(self.screen, self.font)
-            self.skill.update(self.screen)
 
             self.events(1)
 
