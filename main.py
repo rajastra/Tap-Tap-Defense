@@ -21,7 +21,7 @@ class Game:
         #FPS
         self.FPS = FPS
         self.clock = pygame.time.Clock()
-
+        
         #background music
         mixer.music.load(os.path.join("game_assets", "music.ogg"))
 
@@ -129,6 +129,7 @@ class Game:
             self.clock.tick(self.FPS)
 
     def gameplay(self):
+        self.FPS = 30
         self.player = Player()
         self.mob = []
         self.add_mob = 0

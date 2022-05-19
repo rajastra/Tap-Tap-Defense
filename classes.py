@@ -39,16 +39,12 @@ class StartMenu:
 
 class EndMenu:
     def __init__(self, font):
-        self.animation = 0
-        self.img = []
-        self.rect = []
         my_font = pygame.font.SysFont(font_name, 26)
-        for i in range (4):
-            tempimage = pygame.image.load(os.path.join("game_assets", "castle_3.png"))
-            tempimage = pygame.transform.scale(tempimage, (180, 180))
-            tempimage_rect = tempimage.get_rect(center=(350, 90))
-            self.img.append(tempimage)
-            self.rect.append(tempimage_rect)
+        tempimage = pygame.image.load(os.path.join("game_assets", "castle_3.png"))
+        tempimage = pygame.transform.scale(tempimage, (180, 180))
+        tempimage_rect = tempimage.get_rect(center=(350, 90))
+        self.img = tempimage
+        self.rect = tempimage_rect
         self.text = font.render('GAME OVER', False, darker_cyan)
         self.text2 = my_font.render('Press CAPSLOCK to replay the game', False, white)
         self.text3 = my_font.render('Press ESC to exit', False, white)
@@ -57,12 +53,8 @@ class EndMenu:
         self.text3_rect = self.text3.get_rect(center=(350, 270))
 
     def draw(self, screen):
-        if self.animation < 3:
-            self.animation += 1
-        else:
-            self.animation = 0
         screen.fill(cyan)
-        screen.blit(self.img[self.animation], self.rect[self.animation])
+        screen.blit(self.img, self.rect)
         screen.blit(self.text, self.text_rect)
         screen.blit(self.text2, self.text2_rect)
         screen.blit(self.text3, self.text3_rect)
