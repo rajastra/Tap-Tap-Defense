@@ -11,6 +11,7 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 cyan = (94, 129, 162)
 darker_cyan = (111, 196, 169)
+brown = (165,42,42)
 
 textX = 10
 textY = 310

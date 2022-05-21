@@ -116,6 +116,7 @@ class Game:
                         self.waiting = False
 
     def start_screen(self):
+        self.FPS = 30
         self.sm = StartMenu(self.font)
         mixer.music.set_volume(1)
         mixer.music.play(-1)
@@ -129,7 +130,6 @@ class Game:
             self.clock.tick(self.FPS)
 
     def gameplay(self):
-        self.FPS = 30
         self.player = Player()
         self.mob = []
         self.add_mob = 0
