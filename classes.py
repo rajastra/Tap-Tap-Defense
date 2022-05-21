@@ -351,21 +351,30 @@ class Skill1:
         self.cost = 3
         self.knockback = 100
         self.effect = 15
+        self.x = 200
+        self.isactive = False
+        self.image = pygame.image.load(os.path.join("game_assets", "angin.png"))
         self.sound = mixer.Sound(os.path.join("game_assets", "skill1.mp3"))
-
+    
     def active(self, player, list, mana):
         if mana >= self.cost:
             player.use_skill(self.cost)
+            self.isactive = True
             self.sound.play()
             for i in list:
                 if i.name == "NB":
                     i.x += self.knockback
                 elif i.name == 'GB':
                     i.stun(self.effect)
-
+    
     def update(self, screen):
-        pass
-
+        if self.isactive:
+            screen.blit(self.image, (self.x, 0))
+            self.x += 100
+            if self.x >= 700:
+                self.x = 200
+                self.isactive = False
+        
 class Skill2:
     def __init__(self):
         self.name = '1'
