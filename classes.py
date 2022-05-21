@@ -7,35 +7,27 @@ from settings import *
 
 class StartMenu:
     def __init__(self, font):
-        self.animation = 0
-        self.__game_active = False
-        self.img = []
-        self.rect = []
-        for i in range(4):
-            tempimage = pygame.image.load(os.path.join("game_assets", "giant" + str(i) + ".png"))
-            tempimage = pygame.transform.scale(tempimage, (150, 150))
-            tempimage_rect = tempimage.get_rect(center=(350, 100))
-            self.img.append(tempimage)
-            self.rect.append(tempimage_rect)
-        self.text = font.render('Press any key to start', False, darker_cyan)
-        self.text_rect = self.text.get_rect(center=(350, 150))
+        self.animate = 0
+        self.background_image = pygame.image.load(os.path.join("game_assets", "start-menu.png"))
+        self.rescaled_background_image = pygame.transform.scale(self.background_image, (width, height))
+        self.text = font.render('Press any key to start', False, white)
         self.weapon_select = font.render("Glock", True, white)
         self.weapon_select_rect = self.weapon_select.get_rect(center=(350, 200))
         self.skill_select = font.render("Skill1", True, white)
         self.skill_select_rect = self.skill_select.get_rect(center=(350, 250))
 
     def draw(self, screen):
-        if self.animation < 3:
-            self.animation += 1
-        else:
-            self.animation = 0
-        screen.fill(cyan)
-        screen.blit(self.img[self.animation], self.rect[self.animation])
-        screen.blit(self.text, self.text_rect)
-        pygame.draw.rect(screen, black, [305, 180, 90, 40])
-        pygame.draw.rect(screen, black, [305, 230, 90, 40])
+        screen.blit(self.rescaled_background_image, (0, 0))
+        if self.animate < 0:
+            pygame.draw.rect(screen, black, [237, 340, 220, 40])
+            screen.blit(self.text, (243, 350))
+        if self.animate == -15:
+            self.animate = 15
+        pygame.draw.rect(screen, brown, [305, 180, 90, 40])
+        pygame.draw.rect(screen, brown, [305, 230, 90, 40])
         screen.blit(self.weapon_select, self.weapon_select_rect)
         screen.blit(self.skill_select, self.skill_select_rect)
+        self.animate -= 1
 
 class EndMenu:
     def __init__(self, font):
