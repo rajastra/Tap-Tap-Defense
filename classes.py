@@ -75,18 +75,22 @@ class Player():
         self.mana -= cost
 
     def update(self, screen, font):
-        temp = ""
-        for i in range(self.mana):
-            temp += "[]"
+        # temp = ""
+        # for i in range(self.mana):
+        #     temp += "[]"
+        mana_img = pygame.image.load(os.path.join("game_assets", "mana.png"))
+        mana_img = pygame.transform.rotozoom(mana_img, 0, 0.4)
         self.x, self.y = pygame.mouse.get_pos()
         self.x -= 30
         self.y -= 30
         score = font.render("Score : " + str(self.score), True, white)
-        mana = font.render("Mana : " + temp, True, white)
+        mana = font.render("Mana : ", True, white)
         screen.blit(self.img[self.damage], (0, 25))
         screen.blit(self.crosshair, (self.x, self.y))
         screen.blit(score, (textX, textY))
         screen.blit(mana, (textX, textY + (2 * space)))
+        for i in range(self.mana):
+            screen.blit(mana_img, (textX + (i * 20) + 85, textY + (2 * space) - 5))
 
 class BomboSapiens(ABC):
     def __init__(self, name, hp, spd, image):
@@ -275,11 +279,12 @@ class Senjata(ABC):
 
     @abstractmethod
     def update(self, screen, font):
-        temp = ""
-        for i in range(self.ammo):
-            temp += "[||) "
-        ammo = font.render("Ammo : " + temp, True, white)
+        peluru_img = pygame.image.load(os.path.join("game_assets", "peluru.png"))
+        peluru_img = pygame.transform.rotozoom(peluru_img, 0, 0.3)
+        ammo = font.render("Ammo : ", True, white)
         screen.blit(ammo, (textX, textY + (4 * space)))
+        for i in range(self.ammo):
+            screen.blit(peluru_img, (textX + (i * space) * 1.2 + 85, textY + (5 * space) - 15))
         if self.ammo == 0 and not self.isreload:
             self.reload()
         if self.isreload:
