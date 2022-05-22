@@ -336,7 +336,7 @@ class Revolver(Senjata):
     def start(self):
         super().start()
 
-    def shoot(self, list, i):
+    def shoot(self):
         super().shoot()
 
     def reload(self):
