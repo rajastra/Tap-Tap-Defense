@@ -6,6 +6,7 @@ from classes import *
 
 pygame.init()
 pygame.mixer.init()
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 class Game:
     def __init__(self):
