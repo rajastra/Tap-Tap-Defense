@@ -279,7 +279,7 @@ class Senjata(ABC):
 
     @abstractmethod
     def update(self, screen, font):
-        peluru_img = pygame.image.load(os.path.join("game_assets", "peluru.png"))
+        peluru_img = pygame.image.load(os.path.join("game_assets", "Peluru.png"))
         peluru_img = pygame.transform.rotozoom(peluru_img, 0, 0.3)
         ammo = font.render("Ammo : ", True, white)
         screen.blit(ammo, (textX, textY + (4 * space)))
