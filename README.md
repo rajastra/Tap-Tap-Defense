@@ -22,6 +22,7 @@
 
 - [Description of Project](#description-of-project)
 - [How to Run a Game](#how-to-run-a-game)
+- [How to Run a Game in Docker](#how-to-run-a-game-in-docker-linux)
 - [How to Play a Game](#how-to-play-a-game)
 - [UML Class Diagram](#uml-class-diagram)
 - [Contributors of Project](#contributors-of-project)
@@ -118,12 +119,12 @@ sudo docker run -it -v /tmp/.X11-unix:/tmp/.X11-unix  -e DISPLAY=unix$DISPLAY --
 
 ### Link Video YouTube
 
-Untuk penjelasan dari perintah-perintah diatas bisa dilihat pada video dibawah ini.
+Untuk penjelasan dari perintah-perintah menjalankan game pygame di docker container dapat dilihat pada video dibawah ini.
 <br>
 Klik Gambar untuk menonton :)
 <br>
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+[![Penjalasan cara menjalankan game pygame di Docker Container](assets_readme/gambar/thumbnail.jpg)](https://www.youtube.com/watch?v=zPNXTTTtTmg)
 
 ## How to Play a Game
 
