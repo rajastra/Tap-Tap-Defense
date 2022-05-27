@@ -59,6 +59,72 @@ python3 main.py
 
 <br>
 
+## How to Run a Game in Docker (Linux)
+
+<br>
+
+### Step 1
+
+Buka Terminal pada Linux anda masing-masing dan pastikan docker sudah terinstall di komputer anda.
+<br>
+
+### Step 2
+
+Pull Images from Docker Hub
+<br>
+Syntax :
+
+```bash
+docker pull mckriw/pygame-taptapdefense:latest
+```
+
+Or
+
+```bash
+sudo docker pull mckriw/pygame-taptapdefense:latest
+```
+
+<br>
+
+### Step 3
+
+Jalankan Perintah berikut ini:
+
+```bash
+XAUTH=$HOME/.Xauthority
+touch $XAUTH
+
+xhost +
+xhost + username (username linux anda)
+```
+
+<br>
+
+### Last Step
+
+Run a Game
+
+```bash
+docker run -it -v /tmp/.X11-unix:/tmp/.X11-unix  -e DISPLAY=unix$DISPLAY --device /dev/snd mckriw/pygame-taptapdefense
+```
+
+Or
+
+```bash
+sudo docker run -it -v /tmp/.X11-unix:/tmp/.X11-unix  -e DISPLAY=unix$DISPLAY --device /dev/snd mckriw/pygame-taptapdefense
+```
+
+<br>
+
+### Link Video YouTube
+
+Untuk penjelasan dari perintah-perintah diatas bisa dilihat pada video dibawah ini.
+<br>
+Klik Gambar untuk menonton :)
+<br>
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+
 ## How to Play a Game
 
 - ### Start a Game
@@ -198,10 +264,11 @@ Thanks to Contribue this Project 🙏
     <td align="center"><a href="https://github.com/irwantoYS"><img src="https://avatars.githubusercontent.com/u/103361592?v=4" width="100px;" alt=""/><br /><sub><b>Irwanto Yezekiel <br>Sihotang <br>(120140227)</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/wellaamandaa"><img src="https://avatars.githubusercontent.com/u/103342778?v=4" width="100px;" alt=""/><br /><sub><b>Wella <br>Amanda <br>(120140057)</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/rajastra"><img src="https://avatars.githubusercontent.com/u/89762086?v=4" width="100px;" alt=""/><br /><sub><b>Raja  Saputera <br>(120140228)</br></sub></a><br /></td>
-    
+
 </tr>
 <tr>
     <td align="center"><a href="https://github.com/120140219"><img src="https://avatars.githubusercontent.com/u/104046990?v=4" width="100px;" alt=""/><br /><sub><b>M. Rafi Irfan Lubis <br>(120140219)</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/krisnasaputtra"><img src="https://avatars.githubusercontent.com/u/94743282?v=4" width="100px;" alt=""/><br /><sub><b>Krisna Saputra <br>(120140221)</b></sub></a><br /></td>
 </tr>
 </table>
+```
