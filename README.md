@@ -29,7 +29,7 @@
 
 ## Description of Project
 
-Proyek yang kami buat yaitu Proyek game sederhana bernama <b>Tap Tap Defense</b>, <b>Tap Tap Defense</b> yaitu sebuah game dua dimensi yang konsep bermainnya hampir sama dengan game mobile <b> Smash Ant </b> yaitu pertahankan batas penjagaan kita dengan cara menghabisi musuh yang datang dari arah berlawanan batas penjagaan dengan cara mengarahkan cursor ke musuh dan menekan tombol kiri mouse dan Player akan kalah apabila darah player habis(Musuh yang berhasil melewati perbatasan sebanyak darah player) dan bila player berhasil menahan musuh secara terus-menerus maka musuh juga akan bertambah kuat. Selain itu, didalam game ini juga terdapat skill yang dapat digunakan tetapi menggunakan mana,skill diaktifkan dengan mengklik mouse sebelah kanan.
+Proyek yang kami buat yaitu Proyek game sederhana bernama <b>Tap Tap Defense</b>, <b>Tap Tap Defense</b> yaitu sebuah game dua dimensi yang konsep bermainnya hampir sama dengan game mobile <b> Smash Ant </b> yaitu pertahankan batas penjagaan kita dengan cara menghabisi musuh yang datang dari arah berlawanan batas penjagaan dengan cara mengarahkan cursor ke musuh dan menekan tombol kiri mouse dan Player akan kalah apabila kastel hancur lebur dan bila player berhasil menahan musuh secara terus-menerus maka musuh juga akan bertambah kuat. Selain itu, didalam game ini juga terdapat skill yang dapat digunakan tetapi menggunakan mana,skill diaktifkan dengan mengklik mouse sebelah kanan.
 
 <br>
 
@@ -164,7 +164,7 @@ Berikut adalah gambar untuk panduan Control in Game seperti cara shoot klik apa,
 <details>
 
 <summary>What if... Player choose Glock Weapon?</summary>
-Jika player memilih Senjata Glock di dalam Game ,makaplayer akan mendapat amunisi sebanyak 15, namun untuk hitkepada giant bombo menjadi kurang damagenya dibandingkandengan revolver.
+Jika player memilih Senjata Glock di dalam Game ,makaplayer akan mendapat amunisi sebanyak 15, namun untuk hit kepada giant bombo menjadi kurang damagenya dibandingkan dengan revolver.
 <br>
 
 ![glock](assets_readme/gambar/glock.gif)
@@ -254,7 +254,7 @@ Klik link dibawah ini untuk melihat UML Class Diagram lebih jelas:
 
 <br>
 
-Thanks to Contribue this Project 🙏
+Thanks to Contribute this Project 🙏
 
 <br>
 
